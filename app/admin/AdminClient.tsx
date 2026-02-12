@@ -127,7 +127,7 @@ export default function AdminClient({ initialProducts, initialCategories, initia
                                     <div style={{ flex: 1 }}>
                                         <h3 style={{ fontSize: "1.1rem", marginBottom: "5px" }}>{product.name}</h3>
                                         <p style={{ color: "var(--text-color)", opacity: 0.7, fontSize: "0.9rem" }}>{product.category}</p>
-                                        <p style={{ fontWeight: "bold", color: "var(--primary-color)" }}>₹{product.price}</p>
+                                        <p style={{ fontWeight: "bold", color: "var(--primary-color)" }}>Rs. {product.price}</p>
 
                                         {editingId === product.id ? (
                                             <div style={{ marginTop: "10px" }}>
