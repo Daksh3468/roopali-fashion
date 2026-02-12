@@ -6,10 +6,11 @@ import { redirect } from "next/navigation";
 import { cookies } from "next/headers";
 
 export async function loginAction(password: string) {
-    if (password === "admin123") {
+    const adminPassword = process.env.ADMIN_PASSWORD || "admin123";
+    if (password === adminPassword) {
         // Await the cookies() call
         const cookieStore = await cookies();
-        cookieStore.set("admin_auth", "true", { httpOnly: true, path: "/" });
+        cookieStore.set("admin_auth", "true", { httpOnly: true, path: "/", sameSite: "lax", secure: process.env.NODE_ENV === "production" });
         return true;
     }
     return false;
