@@ -1,7 +1,8 @@
-import { supabase } from '@/lib/supabase';
+import { createClient } from '@/utils/supabase/server';
 import { Category } from './types';
 
 export async function getAllCategories(): Promise<Category[]> {
+    const supabase = await createClient();
     const { data, error } = await supabase
         .from('categories')
         .select('*');
@@ -14,6 +15,7 @@ export async function getAllCategories(): Promise<Category[]> {
 }
 
 export async function saveCategory(category: Category) {
+    const supabase = await createClient();
     const { data, error } = await supabase
         .from('categories')
         .upsert([category])
@@ -28,6 +30,7 @@ export async function saveCategory(category: Category) {
 }
 
 export async function deleteCategory(id: string) {
+    const supabase = await createClient();
     const { error } = await supabase
         .from('categories')
         .delete()

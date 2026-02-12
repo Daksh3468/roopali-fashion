@@ -1,7 +1,8 @@
-import { supabase } from '@/lib/supabase';
+import { createClient } from '@/utils/supabase/server';
 import { SiteContent } from './types';
 
 export async function getSiteContent(): Promise<SiteContent> {
+    const supabase = await createClient();
     const { data, error } = await supabase
         .from('site_content')
         .select('*')
@@ -20,6 +21,7 @@ export async function getSiteContent(): Promise<SiteContent> {
 }
 
 export async function saveSiteContent(content: SiteContent) {
+    const supabase = await createClient();
     const { error } = await supabase
         .from('site_content')
         .upsert([{ id: 1, content }]);

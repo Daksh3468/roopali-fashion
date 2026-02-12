@@ -1,23 +1,34 @@
-import { NextResponse } from 'next/server';
-import type { NextRequest } from 'next/server';
+import { type NextRequest } from 'next/server'
+import { updateSession } from './utils/supabase/middleware'
+import { createClient } from './utils/supabase/server'
+import { NextResponse } from 'next/server'
 
-export function middleware(request: NextRequest) {
-    const authCookie = request.cookies.get('admin_auth');
+export async function middleware(request: NextRequest) {
+    // 1. Refresh session
+    let response = await updateSession(request)
 
+    // 2. Auth check for /admin
     if (request.nextUrl.pathname.startsWith('/admin')) {
-        if (!authCookie || authCookie.value !== 'true') {
-            return NextResponse.redirect(new URL('/login', request.url));
+        const supabase = await createClient()
+        const { data: { user } } = await supabase.auth.getUser()
+
+        if (!user) {
+            return NextResponse.redirect(new URL('/login', request.url))
         }
     }
 
-    // If authenticated, allow the request but add security headers to prevent caching
-    const response = NextResponse.next();
-    response.headers.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
-    response.headers.set('Pragma', 'no-cache');
-    response.headers.set('Expires', '0');
-    return response;
+    return response
 }
 
 export const config = {
-    matcher: ['/admin/:path*'],
-};
+    matcher: [
+        /*
+         * Match all request paths except for the ones starting with:
+         * - _next/static (static files)
+         * - _next/image (image optimization files)
+         * - favicon.ico (favicon file)
+         * Feel free to modify this pattern to include more paths.
+         */
+        '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
+    ],
+}

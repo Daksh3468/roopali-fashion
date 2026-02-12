@@ -1,9 +1,10 @@
-import { supabase } from '@/lib/supabase';
+import { createClient } from '@/utils/supabase/server';
 import { Product } from './types';
 
 export type { Product };
 
 export async function getAllProducts(): Promise<Product[]> {
+    const supabase = await createClient();
     const { data, error } = await supabase
         .from('products')
         .select('*')
@@ -17,6 +18,7 @@ export async function getAllProducts(): Promise<Product[]> {
 }
 
 export async function getProductsByCategory(category: string): Promise<Product[]> {
+    const supabase = await createClient();
     const { data, error } = await supabase
         .from('products')
         .select('*')
@@ -31,6 +33,7 @@ export async function getProductsByCategory(category: string): Promise<Product[]
 }
 
 export async function saveProduct(product: Omit<Product, 'id'>) {
+    const supabase = await createClient();
     const { data, error } = await supabase
         .from('products')
         .insert([product])
@@ -45,6 +48,7 @@ export async function saveProduct(product: Omit<Product, 'id'>) {
 }
 
 export async function deleteProduct(id: number) {
+    const supabase = await createClient();
     const { error } = await supabase
         .from('products')
         .delete()
@@ -57,6 +61,7 @@ export async function deleteProduct(id: number) {
 }
 
 export async function updateProduct(id: number, updates: Partial<Product>) {
+    const supabase = await createClient();
     const { error } = await supabase
         .from('products')
         .update(updates)

@@ -1,22 +1,25 @@
 'use client';
 
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
 import { loginAction } from '../actions';
 
 export default function LoginPage() {
-    const [password, setPassword] = useState('');
     const [error, setError] = useState('');
-    const router = useRouter();
+    const [loading, setLoading] = useState(false);
 
-    const handleSubmit = async (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        const success = await loginAction(password);
-        if (success) {
-            router.push('/admin');
-        } else {
-            setError('Invalid password');
+        setError('');
+        setLoading(true);
+
+        const formData = new FormData(e.currentTarget);
+        const result = await loginAction(formData);
+
+        if (result?.error) {
+            setError(result.error);
+            setLoading(false);
         }
+        // Redirect is handled on the server
     };
 
     return (
@@ -36,12 +39,14 @@ export default function LoginPage() {
                 width: '100%',
                 maxWidth: '400px'
             }}>
-                <h1 style={{ marginBottom: '20px' }}>Admin Login</h1>
+                <h1 style={{ marginBottom: '10px' }}>Admin Login</h1>
+                <p style={{ marginBottom: '20px', color: '#666' }}>Use your Supabase account</p>
+
                 <input
-                    type="password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    placeholder="Enter Password"
+                    type="text"
+                    name="username"
+                    required
+                    placeholder="Username"
                     style={{
                         width: '100%',
                         padding: '10px',
@@ -50,8 +55,33 @@ export default function LoginPage() {
                         border: '1px solid #ddd'
                     }}
                 />
-                {error && <p style={{ color: 'red', marginBottom: '15px' }}>{error}</p>}
-                <button type="submit" className="btn btn-primary" style={{ width: '100%', border: 'none' }}>Login</button>
+                <input
+                    type="password"
+                    name="password"
+                    required
+                    placeholder="Password"
+                    style={{
+                        width: '100%',
+                        padding: '10px',
+                        marginBottom: '15px',
+                        borderRadius: '5px',
+                        border: '1px solid #ddd'
+                    }}
+                />
+                {error && <p style={{ color: 'red', marginBottom: '15px', fontSize: '0.9rem' }}>{error}</p>}
+                <button
+                    type="submit"
+                    disabled={loading}
+                    className="btn btn-primary"
+                    style={{
+                        width: '100%',
+                        border: 'none',
+                        opacity: loading ? 0.7 : 1,
+                        cursor: loading ? 'not-allowed' : 'pointer'
+                    }}
+                >
+                    {loading ? 'Logging in...' : 'Login'}
+                </button>
             </form>
         </div>
     );

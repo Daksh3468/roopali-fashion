@@ -5,26 +5,41 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { cookies } from "next/headers";
 
-export async function loginAction(password: string) {
-    const adminPassword = process.env.ADMIN_PASSWORD || "admin123";
-    if (password === adminPassword) {
-        // Await the cookies() call
-        const cookieStore = await cookies();
-        cookieStore.set("admin_auth", "true", { httpOnly: true, path: "/", sameSite: "lax", secure: process.env.NODE_ENV === "production" });
-        return true;
+import { createClient } from "@/utils/supabase/server";
+
+export async function loginAction(formData: FormData) {
+    const username = formData.get('username') as string;
+    const password = formData.get('password') as string;
+
+    // Convert username to internal email format
+    const email = username.includes('@') ? username : `${username}@admin.local`;
+
+    const supabase = await createClient();
+
+    const { error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+    });
+
+    if (error) {
+        return { error: error.message };
     }
-    return false;
+
+    revalidatePath('/admin', 'layout');
+    redirect('/admin');
 }
 
 export async function logoutAction() {
-    const cookieStore = await cookies();
-    cookieStore.delete("admin_auth");
+    const supabase = await createClient();
+    await supabase.auth.signOut();
+    revalidatePath('/', 'layout');
     redirect("/login");
 }
 
 export async function logoutAndRedirectAction() {
-    const cookieStore = await cookies();
-    cookieStore.delete("admin_auth");
+    const supabase = await createClient();
+    await supabase.auth.signOut();
+    revalidatePath('/', 'layout');
     redirect("/");
 }
 
