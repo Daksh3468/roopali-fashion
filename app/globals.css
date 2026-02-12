@@ -524,7 +524,7 @@ section h2 {
 .product-price {
   font-weight: 700;
   font-size: 1.1rem;
-  color: var(--primary-color);
+  color: #666;
   margin-left: 10px;
 }
 

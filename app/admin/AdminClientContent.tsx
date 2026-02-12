@@ -13,7 +13,7 @@ interface AdminClientProps {
     initialContent: SiteContent;
 }
 
-export default function AdminClient({ initialProducts, initialCategories, initialContent }: AdminClientProps) {
+export default function AdminClientContent({ initialProducts, initialCategories, initialContent }: AdminClientProps) {
     const [activeTab, setActiveTab] = useState<"products" | "categories" | "content">("products");
     const [editingId, setEditingId] = useState<number | null>(null);
     const [newImage, setNewImage] = useState("");
@@ -150,11 +150,10 @@ export default function AdminClient({ initialProducts, initialCategories, initia
                                                 </div>
                                             </div>
                                         ) : (
-                                            <button onClick={() => {
-                                                setEditingId(product.id);
-                                                setNewImage(product.image);
-                                            }} style={{ marginTop: "5px", background: "none", border: "none", color: "var(--accent-color)", cursor: "pointer", textDecoration: "underline" }}>Change Image</button>
-                                        )}
+                                            <div>
+                                            </div>
+                                        )
+                                        }
                                     </div>
                                     <form action={async () => {
                                         if (confirm('Are you sure?')) {
