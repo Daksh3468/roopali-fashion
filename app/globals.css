@@ -215,7 +215,7 @@ img {
   display: flex;
   align-items: center;
   background-color: var(--accent-color);
-  padding-top: 95px;
+  padding-top: 50px;
   /* Header height */
   position: relative;
   overflow: hidden;
