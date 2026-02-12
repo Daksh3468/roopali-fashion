@@ -99,7 +99,7 @@ export default function AdminClient({ initialProducts, initialCategories, initia
                                 <input type="text" name="name" required style={{ width: "100%", padding: "10px", borderRadius: "5px", border: "1px solid var(--input-border)", background: "var(--input-bg)", color: "var(--text-color)" }} />
                             </div>
                             <div>
-                                <label style={{ display: "block", marginBottom: "5px", fontWeight: "bold" }}>Price (₹)</label>
+                                <label style={{ display: "block", marginBottom: "5px", fontWeight: "bold" }}>Price (Rs.)</label>
                                 <input type="number" name="price" required style={{ width: "100%", padding: "10px", borderRadius: "5px", border: "1px solid var(--input-border)", background: "var(--input-bg)", color: "var(--text-color)" }} />
                             </div>
                             <div>
