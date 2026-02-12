@@ -6,9 +6,9 @@ import AdminClient from "./AdminClient";
 export const dynamic = 'force-dynamic';
 
 export default async function AdminPage() {
-    const products = getAllProducts();
-    const categories = getAllCategories();
-    const content = getSiteContent();
+    const products = await getAllProducts();
+    const categories = await getAllCategories();
+    const content = await getSiteContent();
 
     return <AdminClient initialProducts={products} initialCategories={categories} initialContent={content} />;
 }

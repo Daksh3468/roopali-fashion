@@ -38,7 +38,7 @@ export async function addProductAction(formData: FormData) {
         throw new Error("Missing required fields");
     }
 
-    saveProduct({ name, price, category, image });
+    await saveProduct({ name, price, category, image });
 
     // Comprehensive revalidation
     revalidatePath('/admin');
@@ -48,10 +48,11 @@ export async function addProductAction(formData: FormData) {
 
 export async function deleteProductAction(id: number) {
     // Get product first to know category for revalidation
-    const products = (await import("@/data/products")).getAllProducts();
+    const { getAllProducts } = await import("@/data/products");
+    const products = await getAllProducts();
     const product = products.find(p => p.id === id);
 
-    deleteProduct(id);
+    await deleteProduct(id);
 
     revalidatePath('/admin');
     if (product) revalidatePath(`/collection/${product.category}`);
@@ -59,9 +60,10 @@ export async function deleteProductAction(id: number) {
 }
 
 export async function updateProductImageAction(id: number, imageUrl: string) {
-    updateProduct(id, { image: imageUrl });
+    await updateProduct(id, { image: imageUrl });
 
-    const products = (await import("@/data/products")).getAllProducts();
+    const { getAllProducts } = await import("@/data/products");
+    const products = await getAllProducts();
     const product = products.find(p => p.id === id);
 
     revalidatePath('/admin');
@@ -78,7 +80,7 @@ export async function addCategoryAction(formData: FormData) {
     const image = formData.get('image') as string || ""; // Allow empty
 
     if (!name || !id) return;
-    saveCat({ id, name, description, image });
+    await saveCat({ id, name, description, image });
 
     revalidatePath('/admin');
     revalidatePath(`/collection/${id}`);
@@ -86,7 +88,7 @@ export async function addCategoryAction(formData: FormData) {
 }
 
 export async function deleteCategoryAction(id: string) {
-    delCat(id);
+    await delCat(id);
     revalidatePath('/admin');
     revalidatePath(`/collection/${id}`);
     revalidatePath('/');
@@ -100,7 +102,7 @@ export async function updateHeroAction(formData: FormData) {
     const buttonText = formData.get('buttonText') as string;
     const image = formData.get('image') as string || "";
 
-    updateHero({ title, description, buttonText, image });
+    await updateHero({ title, description, buttonText, image });
     revalidatePath('/');
     revalidatePath('/admin');
 }

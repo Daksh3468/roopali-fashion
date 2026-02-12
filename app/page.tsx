@@ -11,8 +11,8 @@ import { getSiteContent } from "@/data/content";
 export const dynamic = 'force-dynamic';
 
 export default async function Home() {
-  const categories = getAllCategories();
-  const content = getSiteContent();
+  const categories = await getAllCategories();
+  const content = await getSiteContent();
 
   return (
     <main>

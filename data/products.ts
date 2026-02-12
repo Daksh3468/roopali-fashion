@@ -1,59 +1,70 @@
-import fs from 'fs';
-import path from 'path';
+import { supabase } from '@/lib/supabase';
 import { Product } from './types';
 
 export type { Product };
 
-const dataFilePath = path.join(process.cwd(), 'data', 'products.json');
+export async function getAllProducts(): Promise<Product[]> {
+    const { data, error } = await supabase
+        .from('products')
+        .select('*')
+        .order('id', { ascending: false });
 
-export function getAllProducts(): Product[] {
-    try {
-        const fileContent = fs.readFileSync(dataFilePath, 'utf8');
-        return JSON.parse(fileContent);
-    } catch (error) {
-        console.error("Error reading product data:", error);
+    if (error) {
+        console.error("Error fetching products:", error);
         return [];
     }
+    return data || [];
 }
 
-export function getProductsByCategory(category: string): Product[] {
-    const products = getAllProducts();
-    return products.filter((product) => product.category === category);
+export async function getProductsByCategory(category: string): Promise<Product[]> {
+    const { data, error } = await supabase
+        .from('products')
+        .select('*')
+        .eq('category', category)
+        .order('id', { ascending: false });
+
+    if (error) {
+        console.error("Error fetching products by category:", error);
+        return [];
+    }
+    return data || [];
 }
 
-export function saveProduct(product: Omit<Product, 'id'>) {
-    const products = getAllProducts();
-    const newProduct = { ...product, id: Date.now() }; // Simple ID generation
-    products.push(newProduct);
-    fs.writeFileSync(dataFilePath, JSON.stringify(products, null, 2));
-    return newProduct;
+export async function saveProduct(product: Omit<Product, 'id'>) {
+    const { data, error } = await supabase
+        .from('products')
+        .insert([product])
+        .select()
+        .single();
+
+    if (error) {
+        console.error("Error saving product:", error);
+        throw error;
+    }
+    return data;
 }
 
-export function deleteProduct(id: number) {
-    const products = getAllProducts();
-    const filteredProducts = products.filter(p => p.id !== id);
-    fs.writeFileSync(dataFilePath, JSON.stringify(filteredProducts, null, 2));
-}
+export async function deleteProduct(id: number) {
+    const { error } = await supabase
+        .from('products')
+        .delete()
+        .eq('id', id);
 
-export function updateProduct(id: number, updates: Partial<Product>) {
-    const products = getAllProducts();
-    const index = products.findIndex(p => p.id === id);
-    if (index !== -1) {
-        products[index] = { ...products[index], ...updates };
-        fs.writeFileSync(dataFilePath, JSON.stringify(products, null, 2));
+    if (error) {
+        console.error("Error deleting product:", error);
+        throw error;
     }
 }
 
-// Initial Seed Data (for reference, actual data in products.json)
-/*
-[
-    {
-      "id": 1,
-      "name": "Soft Cotton Romper",
-      "price": 499,
-      "category": "baby-wear",
-      "image": ""
+export async function updateProduct(id: number, updates: Partial<Product>) {
+    const { error } = await supabase
+        .from('products')
+        .update(updates)
+        .eq('id', id);
+
+    if (error) {
+        console.error("Error updating product:", error);
+        throw error;
     }
-]
-*/
+}
 

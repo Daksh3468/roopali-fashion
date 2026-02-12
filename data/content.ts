@@ -1,30 +1,37 @@
-import fs from 'fs';
-import path from 'path';
+import { supabase } from '@/lib/supabase';
 import { SiteContent } from './types';
 
-const dataFilePath = path.join(process.cwd(), 'data', 'content.json');
+export async function getSiteContent(): Promise<SiteContent> {
+    const { data, error } = await supabase
+        .from('site_content')
+        .select('*')
+        .eq('id', 1)
+        .single();
 
-export function getSiteContent(): SiteContent {
-    try {
-        const fileContent = fs.readFileSync(dataFilePath, 'utf8');
-        return JSON.parse(fileContent);
-    } catch (error) {
+    if (error) {
         console.error("Error reading content:", error);
-        // Return default fallback if file missing
         return {
             hero: { title: "", description: "", buttonText: "", image: "" },
             about: { title: "", content: "" },
             bornBaby: { title: "", subtitle: "", description: "", image: "public/images/born_baby.jpg", features: [] }
         };
     }
+    return data.content;
 }
 
-export function saveSiteContent(content: SiteContent) {
-    fs.writeFileSync(dataFilePath, JSON.stringify(content, null, 2));
+export async function saveSiteContent(content: SiteContent) {
+    const { error } = await supabase
+        .from('site_content')
+        .upsert([{ id: 1, content }]);
+
+    if (error) {
+        console.error("Error saving content:", error);
+        throw error;
+    }
 }
 
-export function updateHeroContent(hero: Partial<SiteContent['hero']>) {
-    const content = getSiteContent();
+export async function updateHeroContent(hero: Partial<SiteContent['hero']>) {
+    const content = await getSiteContent();
     content.hero = { ...content.hero, ...hero };
-    saveSiteContent(content);
+    await saveSiteContent(content);
 }

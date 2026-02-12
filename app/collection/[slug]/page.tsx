@@ -12,7 +12,7 @@ import Footer from "@/components/Footer";
 
 export default async function CategoryPage(props: { params: Promise<{ slug: string }> }) {
     const { slug } = await props.params;
-    const products = getProductsByCategory(slug);
+    const products = await getProductsByCategory(slug);
 
     const title = slug.replace(/-/g, " ").replace(/\b\w/g, (l) => l.toUpperCase());
 

@@ -1,33 +1,40 @@
-import fs from 'fs';
-import path from 'path';
+import { supabase } from '@/lib/supabase';
 import { Category } from './types';
 
-const dataFilePath = path.join(process.cwd(), 'data', 'categories.json');
+export async function getAllCategories(): Promise<Category[]> {
+    const { data, error } = await supabase
+        .from('categories')
+        .select('*');
 
-export function getAllCategories(): Category[] {
-    try {
-        const fileContent = fs.readFileSync(dataFilePath, 'utf8');
-        return JSON.parse(fileContent);
-    } catch (error) {
-        console.error("Error reading categories:", error);
+    if (error) {
+        console.error("Error fetching categories:", error);
         return [];
     }
+    return data || [];
 }
 
-export function saveCategory(category: Category) {
-    const categories = getAllCategories();
-    // Check if exists
-    const index = categories.findIndex(c => c.id === category.id);
-    if (index !== -1) {
-        categories[index] = category;
-    } else {
-        categories.push(category);
+export async function saveCategory(category: Category) {
+    const { data, error } = await supabase
+        .from('categories')
+        .upsert([category])
+        .select()
+        .single();
+
+    if (error) {
+        console.error("Error saving category:", error);
+        throw error;
     }
-    fs.writeFileSync(dataFilePath, JSON.stringify(categories, null, 2));
+    return data;
 }
 
-export function deleteCategory(id: string) {
-    const categories = getAllCategories();
-    const filtered = categories.filter(c => c.id !== id);
-    fs.writeFileSync(dataFilePath, JSON.stringify(filtered, null, 2));
+export async function deleteCategory(id: string) {
+    const { error } = await supabase
+        .from('categories')
+        .delete()
+        .eq('id', id);
+
+    if (error) {
+        console.error("Error deleting category:", error);
+        throw error;
+    }
 }
