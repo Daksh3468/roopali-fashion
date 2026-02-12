@@ -499,7 +499,7 @@ section h2 {
 
 .collection-card:hover .product-card-overlay {
   transform: translateY(-5px);
-  background: rgba(255, 255, 255, 227);
+  background: #ffffffdb;
 }
 
 .product-info {
