@@ -29,7 +29,7 @@ export default function ProductCard({ product }: ProductCardProps) {
                         <p>{product.category}</p>
                     </div>
                     <div className="product-price">
-                        ₹{product.price}
+                        Rs. {product.price}
                     </div>
                 </div>
             </div>
