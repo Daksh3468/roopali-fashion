@@ -11,7 +11,7 @@ export default function Contact() {
                             <div>
                                 <h4>Address</h4>
                                 <p>
-                                    16-Shilpan Plaza, B/h P.D.M. College,
+                                    15,16-Shilpan Plaza, B/h P.D.M. College,
                                     <br />
                                     Krishna Nagar Main Road,
                                     <br />
